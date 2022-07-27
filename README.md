@@ -8,11 +8,14 @@
 * Send notice to the lead
 
 ## Settings
-### 1. Set Webhook
+
+### 1. Restore DB database/db.sql (MySQL)
+
+### 2. Set Webhook
 ```php
 https://api.telegram.org/bot<Token>/setWebhook?url=https://<Path bot.php>
 ```
-### 2. Customize file include/config.php
+### 3. Customize file include/config.php
 ```php
 <?php
 return [
