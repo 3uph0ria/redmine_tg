@@ -14,7 +14,7 @@ class Database
      */
     private function connect()
     {
-        $config = require_once 'config.php';
+        $config = require 'config.php';
         $dsn = 'mysql:host=' . $config['host'] . ';dbname=' . $config['dbName'] . ';charset=' . $config['charset'];
         $this->link = new PDO($dsn, $config['userName'], $config['password']);
 
@@ -78,7 +78,7 @@ class Database
 
     public function GetAuthor($AuthorId)
     {
-        $botUser =  $this->link->query("SELECT * FROM `users` where `author_id` = $AuthorId");
+        $botUser =  $this->link->query("SELECT * FROM `users` where `AuthorId` = $AuthorId");
         return $botUser->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -90,7 +90,7 @@ class Database
 
     public function UpdateUserFullName($Fullname, $IdUser)
     {
-        $botUser =  $this->link->prepare("Update `users` set `FullNme` = ? where `Id` = ?");
+        $botUser =  $this->link->prepare("Update `users` set `FullName` = ? where `Id` = ?");
         $botUser->execute(array($Fullname, $IdUser));
     }
 
@@ -102,7 +102,7 @@ class Database
 
     public function UpdateUserText($text, $IdUser)
     {
-        $botUser =  $this->link->prepare("Update `users` set `text` = ? where `PeerId` = ?");
+        $botUser =  $this->link->prepare("Update `users` set `Text` = ? where `PeerId` = ?");
         $botUser->execute(array($text, $IdUser));
     }
 

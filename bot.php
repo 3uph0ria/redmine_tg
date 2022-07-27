@@ -103,7 +103,7 @@ class Bot
             exit;
         }
 
-        if(!$user['FullNme'] && !$arrData['callback_query']['data'])
+        if(!$user['FullName'] && !$arrData['callback_query']['data'])
         {
             if($arrData['message']['text'])
             {
@@ -232,7 +232,7 @@ class Bot
 
         if($message == 'Отправить отчет')
         {
-            if($user['text'])
+            if($user['Text'])
             {
                 $check = 0;
 
@@ -248,7 +248,7 @@ class Bot
 
                         $issue = $Redmine->GetIssue($user['ActiveIssue']);
                         $author = $Database->GetAuthor($issue->issue->author->id);
-                        $dataSend = array('text' => 'Исполнитель ' . $user['FullNme'] . ' отправил отчет по выполненным работам к задаче ' . $Redmine->rdUrl . 'issues/' . $user['ActiveIssue'] . ' прошу вас проверить.', 'chat_id' => $author['PeerId']);
+                        $dataSend = array('text' => 'Исполнитель ' . $user['FullName'] . ' отправил отчет по выполненным работам к задаче ' . $Redmine->rdUrl . 'issues/' . $user['ActiveIssue'] . ' прошу вас проверить.', 'chat_id' => $author['PeerId']);
                         $this->requestToTelegram($dataSend, "sendMessage");
 
                         break;
@@ -279,7 +279,7 @@ class Bot
 
             if($textMessage)
             {
-                $Database->UpdateUserText($user['text'] . "\n" . $textMessage, $chat_id);
+                $Database->UpdateUserText($user['Text'] . "\n" . $textMessage, $chat_id);
 
                 $justKeyboard = $this->getKeyBoard([[["text" => "Отправить отчет"]], [["text" => "К списку задач"]] ]);
 

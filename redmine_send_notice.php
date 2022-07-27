@@ -2,18 +2,21 @@
 
 //update_issue(48368);
 include_once 'include/Database.php';
+include_once 'include/Redmine.php';
+$config = require 'include/config.php';
 $Database = new Database();
+$Redmine = new Redmine();
 
 $user = $Database->GetUser($_GET['chat_id']);
 $chat_id = $_GET['chat_id'];
 $img = $Database->GetImg($chat_id);
-$data['issue']['notes'] = 'Добавил ' .  $user['FullNme'] . "\n" . $user['text'];
+$data['issue']['notes'] = 'Добавил ' .  $user['FullName'] . "\n" . $user['Text'];
 $j = 0;
 
 for($i = 0; $i < Count($img); $i++)
 {
     // Получаем инфу о фотографии по ее FileId
-    $ch = curl_init('https://api.telegram.org/bot5562389505:AAGBMD2yHfI_VBaKRqu-sTdJ5oNccK4m4dM/getFile');
+    $ch = curl_init($config['tgApiUrl'] . $config['tgToken'] . '/getFile');
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, array('file_id' => $img[$i]['FileId']));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -25,14 +28,14 @@ for($i = 0; $i < Count($img); $i++)
     // Есди все "ок" качаем ее к нам на хост в папочку "img"
     if ($res['ok'])
     {
-        $src = 'https://api.telegram.org/file/bot5562389505:AAGBMD2yHfI_VBaKRqu-sTdJ5oNccK4m4dM/' . $res['result']['file_path'];
+        $src = $config['tgApiFile'] .  $config['tgToken'] . '/' . $res['result']['file_path'];
         $dest = $user['Id'] . '-' . time() . '-' . basename($src);
         $Database->UpdateImgName($img[$i]['Id'], $dest);
         copy($src,  'img/' . $dest);
     }
 
     // Получаем токен для загрузки фотографии на Redmine
-    $upload_url = 'http://195.208.25.161:33081/redmine/uploads.json?key=934043f58d6d016c8c6708279d927d40b6400d00';
+    $upload_url = $config['rdUrl'] . 'uploads.json?key=' . $config['rdToken'];
     $request['type'] = 'post';
     $request['content_type'] = 'application/octet-stream';
     $filecontent = file_get_contents('img/' . $dest);
@@ -50,7 +53,7 @@ for($i = 0; $i < Count($img); $i++)
 $data = json_encode($data);
 $data = json_decode($data);
 
-$planio_url = "http://195.208.25.161:33081/redmine/issues/".$user['ActiveIssue'].".json?key=934043f58d6d016c8c6708279d927d40b6400d00";
+$planio_url = $config['rdUrl'] . "issues/" . $user['ActiveIssue'] . ".json?key=" . $config['rdToken'];
 $ch = curl_init($planio_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
